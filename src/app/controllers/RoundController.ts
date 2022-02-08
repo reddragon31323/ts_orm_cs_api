@@ -1,44 +1,43 @@
 import { Request, Response } from "express";
 import { getRepository } from "typeorm";
 import Round from "../models/Round";
-import Objective from "../models/Objective";
 
-class RoundController{
-    async list(req: Request, res: Response){
+class RoundController {
+    async list(req: Request, res: Response) {
         const repository = getRepository(Round);
-        const list = await repository.find({relations: ["roundId", "objectiveId"]})
+        const list = await repository.createQueryBuilder('tb_round').leftJoinAndSelect("tb_round.objectives", "objective").getMany();
         return res.json(list);
     }
-    async store(req: Request, res: Response){
+    async store(req: Request, res: Response) {
         const repository = getRepository(Round);
-        const repositoryObjective = getRepository(Objective)
-        const {roundId, objectiveId} = req.body;
-        const roundIdExists = await repository.findOne({where: {"id": roundId}});
-        const objectiveIdExists = await repositoryObjective.findOne({where: {"id": objectiveId}});
-        if(roundIdExists){
+        const { id, objectives } = req.body;
+        const roundIdExists = await repository.findOne({ where: { "id": id } });
+        if (roundIdExists) {
             return res.sendStatus(409);
         }
-        if(!objectiveIdExists){
+        if (!objectives) {
             return res.sendStatus(404);
         }
-        const list = await repository.createQueryBuilder('tb_round').leftJoinAndSelect("objectives", "objective", "objective.roundId = tb_round.id").getMany();
         const j = repository.create(req.body);
-        await repository.save(list)
         await repository.save(j);
         return res.json(j);
     }
-    async delete(req: Request, res: Response){
+    async delete(req: Request, res: Response) {
+
         const repository = getRepository(Round);
-        const{id} = req.body;
-        const idExists = await repository.findOne({where: {"id": id}});
-        if(idExists){
-            await repository.remove(id);
+        const { id } = req.body;
+        const idExists = await repository.findOne({ where: { "id": id } });
+        if (idExists) {
+            console.log(idExists)
+            await repository.remove(idExists);
             return res.sendStatus(204);
-        }else{
+        } 
+        else {
             return res.sendStatus(404);
         }
-        
+
+
     }
-    
+
 }
 export default new RoundController();

@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryColumn, OneToMany } from "typeorm";
+import { Entity, Column, PrimaryColumn, OneToMany, ManyToOne, JoinColumn } from "typeorm";
 import Local from "./Local";
+import Round from "./Round";
 
 @Entity('tb_objective')
 export default class Objective{
@@ -14,4 +15,5 @@ export default class Objective{
 
     @OneToMany(() => Local, local => local.objective)
     locals: Local[];
+
 }

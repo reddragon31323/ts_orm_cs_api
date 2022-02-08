@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable } from "typeorm";
+import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable, OneToMany } from "typeorm";
 import Match from './Match';
 import Objective from './Objective';
 import { Mode } from "./Mode";
@@ -30,5 +30,9 @@ class Round{
     @ManyToMany(() => Objective)
     @JoinTable({name: "tb_round_objective", joinColumn:{name:"round_id", referencedColumnName: "id"}, inverseJoinColumn:{name:"objective_id", referencedColumnName:"id"}})
     objectives:Objective[];
+    
+/*
+    @OneToMany(() => Objective, objective => objective.round)
+    objectives: Objective[];*/
 }
 export default Round;
